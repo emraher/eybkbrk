@@ -1,0 +1,1555 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Emrah ER
+%% eer@politics.ankara.edu.tr
+%% "Ekonometriye Yeni Baþlayanlar için Kýsa bir R Kýlavuzu" 
+%% kitapçýðýna ait Sweave dosyasýdýr
+%% Bu dosyayý R'da çalýþtýrmak için: `Sweave("R_giris.Rnw")'
+%% Friedrich Leisch tarafýndan yazýlan Sweave için 
+%% http://www.stat.uni-muenchen.de/~leisch/Sweave/
+%% adresine bakýnýz.
+%% Bu dosya Mahmood Arai tarafýndan hazýrlanan 
+%% "A Brief Guide to R for Beginners in Econometrics"
+%% kýlavuzun Türkçeleþtirilmiþ halidir.
+%% http://people.su.se/~ma/R_intro/
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Giriþ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,a4wide]{article}
+\usepackage[turkish]{babel}
+\usepackage[latin5]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{html,graphics,color,amsmath,amsfonts,natbib}
+\usepackage{Sweave,fancyvrb,color,url,hyperref}
+\SweaveOpts{echo=TRUE}
+\setkeys{Gin}{width=\textwidth}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.2cm}
+\newcommand{\R}{\textbf{R}}
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+    breaklinks = {true},
+    colorlinks = {true},
+    linkcolor = {Blue},
+    citecolor = {Blue},
+    urlcolor = {Red}
+    }
+\SweaveOpts{keep.source=TRUE}
+
+\newcommand{\ee}{\htmladdnormallink{Emrah ER}{http://eremrah.com}}
+\newcommand{\ma}{\htmladdnormallink{Mahmood ARAI}{http://people.su.se/~ma}}
+\newcommand{\Rhome}{\htmladdnormallink{\R\  Anasayfa}
+{http://www.r-project.org/}}
+
+\newcommand{\CRAN}{\htmladdnormallink{CRAN-mirror}
+{http://cran.r-project.org/}}
+
+\newcommand{\CRANTV}{\htmladdnormallink{CRAN Konu Görüntüleme:
+Sayýsal Ekonometri}
+{http://ftp.sunet.se/pub/lang/CRAN/web/views/Econometrics.html}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Ekonometriye Yeni Baþlayanlar için Kýsa bir \R\ Kýlavuzu}
+\author{\textbf{Yazan:}\ma \\Stockholm Üniversitesi, Ýktisat Bölümü\\
+\\
+\textbf{Türkçeleþtiren:} \ee\footnote{Bu çeviri benim \R\ ile ilgili olarak gerçekleþtirdiðim
+ilk çalýþma olduðundan bazý çeviri hatalarý içerebilir. Hatalarý bana bildirirseniz sevinirim.} \\Ankara Üniversitesi, SBF Ýktisat Bölümü\\
+{\small Ýlk Versiyon: 11/06/2010}}
+\date{}
+\maketitle
+
+\section{Giriþ}
+
+\subsection{\R\ Hakkýnda}
+
+\R\  GPL (GNU Kamu Lisansý) altýnda yayýnlanan ve tüm ana 
+platformlarda çalýþtýrýlabilen bir programdýr.
+\R, \Rhome'sýnda þu þekilde tanýmlanmaktadýr: 
+
+\begin{quotation}
+\textit{"R istatistiki hesaplama ve grafik için bir özgür program ortamýdýr.
+Çok çeþitli Unix platformunda, Windows ve MacOS altýnda harmanlama yapabilmekte ve çalýþmaktadýr.
+R'ý indirmek için lütfen tercih ettiðiniz \CRAN'ý seçiniz."}
+\end{quotation}
+
+Kýlavuzlar ve farklý dökümanlar için \Rhome'sýný ziyaret ediniz.
+\R\ üzerine yazýlmýþ çok sayýda kitap mevcuttur.
+R ile iliþkili yayýnlarýn bir listesi için 
+R-Project\footnote{ \url{http://www.R-project.org/doc/bib/R.bib}} web sayfasýný
+ziyaret ediniz.
+\citet{Dalgaard}
+ve \citet{Fox} baþlangýç düzeyi için ideal kitaplardýr.
+Ýleri düzey bir kitap için ise klasik bir referans olan 
+\citet{VR}'yi inceleyiniz. 
+\citet{AER} özel olarak ekonometri konularýný ele almaktadýr. Ayrýca \CRANTV\ sayfasýný inceleyiniz.
+ 
+\R\ ve \LaTeX'i dokumak için 
+Sweave'e\footnote{ \url{http://www.stat.uni-muenchen.de/~leisch/Sweave/}} bakýnýz. 
+\R\ kullanarak yeniden türetilebilir araþtýrmalar için \citet{Koenker07}'ye bakýnýz. 
+\R'a atýf yapmak için ise \citet{Rcore}'e baþvurulabilir.
+
+\subsection{Bu sayfalar hakkýnda}
+
+Bu ekonometriye yeni baþlayanlar için bir el kýlavuzudur.
+Bu kýlavuz Mahmood Arai tarafýndan hazýrlanan kýlavuz kullanýlarak 
+oluþturulmuþtur\footnote{ \url{http://people.su.se/~ma/R_intro/R_intro.pdf}}. 
+\verb+#+ sembolü yorumlar için kullanýlmýþtýr. Dolayýsýyla  bir satýrda \verb+ # + 
+ardýndan gelen tüm yazýlar yorumdur.
+\verb+ > + iþaretini takip eden yazýlar ise \R-komutlarýdýr. Örneðin: 
+
+<<echo=false>>=
+options(width=60)
+@
+
+<<Code chunk>>=
+ornegim <- "ornek"
+ornegim
+@
+
+
+Kod yorumlarýný da içeren ve çalýþtýrýlmayan R-kodlarý aþaðýdaki biçimde paragraflandýrýlmýþtýr.
+
+{\small \begin{verbatim}
+     ornegim <- "ornek" # <ornegim> adlý bir nesne yaratýr.
+     ornegim
+\end{verbatim}}
+
+
+\verb+< >+ arasýnda yer alan karakterler dosyalarýn, fonksiyonlarýn, vs. isimleridir.\\
+\verb+<verim>,<nesnem>+ gibi \verb+<benimbirseyim>+ þeklindeki isimler
+genel bir veriye, nesneye, vs.ye atýfta bulunmak için kullanýlmaktadýr.
+
+\subsection{Nesneler ve dosyalar}
+
+\R\  \textit{nesneler} gibi þeylere önem vermektedir. Bir veri seti, vektör, matris, 
+regresyon sonucu, çizim, vs. hepsi nesnelerdir. Bir dosya içerisine bir veya daha fazla 
+nesne kaydedilebilir. \R-verisi içeren bir dosya bir nesne deðildir fakat bir nesneler kümesidir.
+
+Temel olarak kullanýlan tüm komutlar \textit{fonksiyonlar}dýr.
+birsey(nesne) þeklindeki bir komut, nesne üzerinde iþlem gerçekleþtirir.
+Bu ise birçok parantez yazacaðýnýz anlamýna gelmektedir. Parantezlerin olup olmadýðýný, 
+ayrýca doðru yerde olup olmadýklarýný kontrol edin.
+
+ 
+\section{Ýlk birkaç þey}
+\subsection{Kurulum}
+
+\R\  birçok farklý platform altýnda çalýþabilmektedir ve
+[\CRAN]'dan indirilebilir. \\
+
+\subsection{\R\ ile çalýþma}
+
+Bir proje için bir klasör oluþturma ve \R'ý bu klasör altýnda çalýþtýrmak iyi bir fikirdir.
+Bu, çalýþmanýzý kaydetmenizde ve daha sonraki oturumlarda tekrar bulmanýzda kolaylýk saðlar.
+
+R'ýn \textit{MS-Windows}'ta belirli bir dizinde baþlamasýný istiyorsanýz
+\verb+<start in directory>+ dizinini çalýþma dizini olarak tanýmlamanýz gerekmektedir.
+Bu iþlem R-ikonu üzerinde farenin sað tuþuna týklanýp, \verb+<properties>+  kýsmýna gidilerek
+deðiþtirilebilir. 
+
+\textit{\R\ içerisinde çalýþma dizinini görüntüleme:} 
+
+<<Directory1>>=
+getwd()
+@
+Çalýþma dizinini var olan baþka bir dizin olan \verb+</ee/r_ekon>+ ile deðiþtirmek için:
+
+
+{\small \begin{verbatim}
+     setwd("/ee/r_ekon") 
+\end{verbatim}}
+
+
+\subsection{\R'da isimlendirme}
+
+Bir nesneyi \verb+<benim_nesnem>+  veya
+\verb+<benim-nesnem>+  þeklinde isimlendirmeyin bunun yerine
+\verb+<benim.nesnem>+ kullanýn.\\
+\R'da  \verb+<benim.nesnem>+ ve  \verb+<Benim.nesnem>+ isimlerinin
+iki farklý isim olduðuna dikkat edin. Sayý ile baþlayan adlandýrmalar (\verb+<1a>+ gibi) 
+\R'da kabul edilmemektedir. Bunun yerine \verb+<a1>+ kullanabilirsiniz.
+
+Bir veri setinde deðiþken isimlerini nesne isimleri olarak kullanmamanýz gerekir.
+Eðer kullanýrsanýz; nesne, deðiþkeni benzer isimdeki baþka bir nesne ile gölgelendirecektir. 
+Bu durumda deðiþkeni çaðýrdýðýnýzda nesnenin görüntülenmesi problemi ortaya çýkacaktýr.
+
+Bu sorundan kaçýnmak için:
+
+
+\begin{enumerate}
+  \item Bir nesneye veri setinizdeki bir deðiþken ile ayný ismi vermeyin.
+  \item Eðer bu kuralý takip edemiyorsanýz, deðiþkenlere, deðiþkenleri 
+    içeren veri seti ve deðiþken adýyla baþvurun. Örneðin, \verb+<df1>+
+    veri setindeki \verb+<ucret>+ deðiþkenine:
+        {\small \begin{verbatim}
+            df1$ucret.
+        \end{verbatim}}
+    komutu ile baþvurulabilir.
+\end{enumerate}
+
+``Gölgelendirme'' problemi ayný zamanda \R\ fonksiyonlarý ile de iliþkilidir.
+\R\ fonksiyonlarý ile benzer isimlere sahip nesne isimleri kullanmayýn.\\
+\verb+<conflicts(detail=TRUE)>+ komutu yarattýðýnýz bir nesnenin
+\R\ paketlerinde yer alan baþka bir nesne ile çakýþýp çakýþmadýðýný kontrol eder ve listeler. 
+Yalnýzca \verb+<.GlobalEnv>+ --çalýþma alanýnýz-- altýnda listelenen çakýþmalara dikkat etmelisiniz
+\verb+<.GlobalEnv>+ altýnda listelenen tüm nesneler, \R\ paketlerindeki nesneleri gölgelendirmektedir.
+Nesnelerin \R\ paketlerinde kullanýlmasý için gölgelendirmeye neden olan nesnelerin kaldýrýlmasý gerekmektedir.  
+ 
+Aþaðýdaki örnek \verb+<T>+ nesnesini yaratmakta --bundan kaçýnýlmalýdýr çünkü
+\verb+<T>+, <TRUE> anlamýna gelmektedir-- ve çakýþmalarý kontrol edip, \verb+<T>+'yi kaldýrarak
+çakýþma sorununu çözmektedir.
+
+{\small \begin{verbatim}
+     T <- "zaman"
+     conflicts(detail=TRUE)
+     rm(T)
+     conflicts(detail=TRUE)
+\end{verbatim}}
+
+\verb+<c,C,D,F,I,q,t,T>+ gibi tek-harflik kelimelerin de isim olarak kullanýmýndan da kaçýnmalýsýnýz.
+Bunlarýn hepsinin \R'da özel anlamlarý vardýr.
+
+
+\textit{Dosya uzantýlarý}
+
+R-kodu içeren dosyalarýnýzýn uzantýsýnda \verb+<R>+ kullanmak iyidir.
+\verb+<lab1.R>+ þeklindeki bir dosya R-kodlarýný içeren bir metin dosyasý olacaktýr.
+
+\verb+<rda>+ uzantýsý çalýþma görüntüleri (yani \verb+<save()>+ ile yaratýlan dosyalar) için idealdir.
+\verb+<lab1.rda>+ þeklindeki bir dosya R-nesnelerini içerecektir. 
+
+Kaydedilmiþ çalýþma görüntüsü için varsayýlan isim \verb+<.RData>+'dýr.
+\verb+<RData>+'yý dosya uzantýsý olarak kullandýðýnýzda bir dosyayý \verb+<.RData>+
+olarak adlandýrmadýðýnýza dikkat edin.  
+
+
+\subsection{Çalýþma alaný nesnelerini ve görüntülerini kaydetme}
+\verb+<DataWageMacro.rda>+ dosyasýný indirin\footnote{\url{http://people.su.se/~ma/R_intro/data/}}.
+
+\verb+<lnu>+ ve  \verb+<macro>+ veri setlerini içeren \verb+<DataWageMacro.rda>+ dosyasýný
+
+{\small \begin{verbatim}
+     load("DataWageMacro.rda") 
+     ls()                       # nesneleri listeler
+\end{verbatim}}
+
+komutu ile okuyabilirsiniz.
+
+Aþaðýdaki komut \verb+<lnu>+ nesnesini \verb+<verim.rda>+ dosyasýna kaydeder.  
+
+{\small \begin{verbatim}
+     save(lnu, file="verim.rda")
+\end{verbatim}}
+
+\R'ý tekrar ayný dizinde baþlattýðýnýzda otomatik olarak yüklenecek olan
+çalýþma alanýnýn bir görüntüsünü kaydetmek için, 
+
+{\small \begin{verbatim}
+     save.image() 
+\end{verbatim}}
+
+komutunu kullanýn.
+
+Çalýþma alanýnýzýn görüntüsünü \R'dan çýkarken karþýnýza gelen
+\verb+<Save workspace image? [y/n/c]:>+ sorusuna \verb+<yes>+ cevabýný vererek de
+kaydedebilirsiniz.
+  
+Bu þekilde çalýþma alanýnýzýn görüntüsü \verb+<.RData>+ gizli dosyasýna kaydedilecektir.
+
+Cari çalýþma alanýnýzýn görüntüsünü kaydedebilir ve \verb+<goruntum.rda>+ adýný verebilirsiniz.
+{\small \begin{verbatim}
+     save.image("goruntum.rda") 
+\end{verbatim}}
+
+\subsection{Genel seçenekler}
+
+\verb+<options()>+ komutu hesaplamalarýn ve sonuçlarý görüntülemenin farklý
+özelliklerini ele alan bir dizi seçeneðin düzenlenmesinde kullanýlabilir.
+
+Þimdi birkaç faydalý seçeneðe bakalým. Satýr uzunluðunu 60 karaktere sýnýrlayarak baþlýyoruz.
+
+<<Options>>=
+options(width=60)
+@
+
+{\small \begin{verbatim}
+     options(prompt=" R> ")  # promptu R> olarak deðiþtirir.
+     options(scipen=3)       # R version 1.8'den. Bu seçenek
+                             # R'a sayilarý üstel format 
+                             # yerine sabit formatta 
+                             # göstermesini söyler. Örneðin, 
+                             # <exp(28)>'in sonucu olarak 
+                             # <1.446257e+12> yerine 
+                             # <1446257064291>. 
+
+     options()               # seçenekleri görüntüler.
+\end{verbatim}}
+
+
+\subsection{Yardým alma}
+
+
+{\small \begin{verbatim}
+     help.start()            # yardým sayfalarýný açar.
+     help(lm)                # <lm> doðrusal model 
+                             # (linear model) 
+                             # ile ilgili yardým.
+     ?lm                     # yukarýdaki ile ayný.
+\end{verbatim}}
+
+
+\section{Temel komutlar}
+
+{\small \begin{verbatim}
+     ls()                   # tüm nesneleri listeler. 
+     ls.str()               # tüm nesnelerin detaylarýný listeler. 
+     str(nesnem)            # <nesnem>'in detaylarýný listeler. 
+     list.files()           # dizindeki tüm dosyalarý listeler. 
+     dir()                  # dizindeki tüm dosyalarý listeler.
+     nesnem                 # basit olarak nesneyi görüntüler. 
+     rm(nesnem)             # <nesnem> nesnesini kaldýrýr. 
+     rm(list=ls())          # çalýþma alanýndaki tüm nesneleri 
+                            # kaldýrýr. 
+                                    
+     save(nesnem, 
+     file="nesnem.rda")     # <nesnem> nesnesini <nesnem.rda> 
+                            # dosyasýna kaydeder. 
+                                    
+     load("calismam.rda")   # "calismam.rda"'yý hafýzaya yükler.
+     summary(verim)         # <verim> için basit istatistikleri 
+                            # görüntüler. 
+                                    
+     hist(x,freq=TRUE)      # <x> nesnesine ait histogramý 
+                            # görüntüler. 
+                            # <freq=TRUE> frekansý gösterir ve
+                            # <freq=FALSE> olasýlýklarý gösterir.
+                                    
+     q()                    # R'dan çýkar.
+
+\end{verbatim}}
+Bir komutun çýktýsý doðrudan \verb+< <- >+ kullanýlarak bir nesneye 
+atanabilir ki bu durumda nesneye bir deðer atanmýþ olur. Aþaðýda yer
+alan kodun ilk satýrý $1$,$2$ ve $3$ deðerlerini içeren \verb+<VV>+
+isimli bir nesne yaratýr. Ýkinci satýr ise \verb+<VV>+ isimli bir
+nesne yaratýr ve \verb+<VV>+ nesnesinin içeriðini görüntüler. 
+
+<<A Vector>>=
+VV <- c(1,2,3)
+(VV <- 1:2)
+@
+
+
+\section{Veri düzenleme}
+\subsection{Düz metin formatýnda veriyi okuma:}
+
+\textit{Sütunlarda veri}
+
+Bu örnekteki veri seti bir metin dosyasýndandýr.
+\texttt{\htmladdnormallink{<tmp.txt>}{
+http://people.su.se/~ma/R_intro/data/tmp.txt}} dosyasý ilk satýrýnda
+deðiþken isimlerini içermektedir (isimler boþluk ile ayrýlmýþtýr) ve bu 
+deðiþkenlerin deðerleri diðer satýrlarda yer almaktadýr (deðerler
+ boþluk ile ayrýlmýþtýr). 
+
+Aþaðýdaki kod \verb+<tmp.txt>+  dosyasýnýn içeriðini okur ve bunu
+\verb+<dat>+ isimli bir nesneye atar.
+
+<<Reading data>>=
+FILE <- "http://people.su.se/~ma/R_intro/data/tmp.txt"
+dat <- read.table(
+file= FILE,
+header = TRUE)
+dat 
+@
+
+\verb+<header = TRUE>+ argümaný ilk satýrda deðiþken isimlerinin
+olduðunu belirtir. \verb+<dat>+ nesnesi \R'da adlandýrýldýðý þekliyle
+ bir veri setidir.
+
+Eðer \verb+<tmp.txt>+ veri dosyasýndaki sütunlar \verb+<,>+ ile 
+ayrýlmýþsa, kod yazýmý,
+
+{\small \begin{verbatim}
+     read.table("tmp.txt", header = TRUE, sep=",")
+\end{verbatim}}
+
+þeklinde olmalýdýr.
+
+Eðer ondalýk karakteri \verb+<.>+ þeklinde ise bunun tanýmlanmasý gereklidir.
+Eðer ondalýk karakteri \verb+<,>+ þeklinde ise \verb+<read.csv>+ komutunu
+kullanabilir ve ardýndan gelen argümaný \verb+<dec=",">+ fonksiyonu içerisinde 
+tanýmlayabilirsiniz.
+
+\subsection{Tablo verisinde mevcut olmayan gözlem (NA) ve sýnýrlayýcýlar}
+ 
+\verb+<data1.txt>+ dosyasý aþaðýdaki veriyi içermektedir:
+
+{\small \begin{verbatim}
+1 . 9
+6 3 2
+\end{verbatim}}
+
+Burada ikinci sütünda (deðiþkende) yer alan ilk gözlem 
+eksiktir ve \verb+<.>+ olarak kodlanmýþtýr.\\
+\R'a \verb+<.>+'nýn eksik deðer olduðunu bildirmek için
+\verb+<na.strings=".">+ argümanýný kullanýrýz.
+
+<<Read table>>=
+FILE <- "http://people.su.se/~ma/R_intro/data/data1.txt"
+read.table(file=FILE ,na.strings="." )
+@
+
+Bazen sütunlar boþluklardan farklý ayraçlar ile ayrýlýrlar.
+Ayraç, örneðin, \verb+<,>+ olabilir ki bu durumda \verb+<sep=",">+ argümanýný
+kullanmamýz gerekir. 
+
+Eðer sütunlar \verb+<,>+ ile ayrýlmýþsa ve bazý sütunlarda aþaðýdakine benzer 
+þekilde boþluklar varsa bu durumda \verb+ <na.strings=".">+ argümanýnýn 
+çalýþmayacaðýna dikkat edin. NA aslýnda iki boþluk þeklinde kodlanýr,
+bir nokta ve iki boþluk, ve \verb+ <na.strings=".">+ þeklinde
+ifade edilmesi gerekir.
+
+{\small \begin{verbatim}
+1,  .  ,9
+6,  3  ,2
+\end{verbatim}}
+
+Bazen eksik deðerler basitçe <boþluk> þeklindedir.
+
+{\small \begin{verbatim}
+1  9
+6 3 2
+\end{verbatim}}
+
+Ýlk satýrda 1 ile 9 arasýnda iki boþluk olduðuna
+dikkat edin. Bu ikinci sütundaki deðerin boþluk olduðu anlamýna
+gelir. Bu ise eksik deðer anlamýndadýr. Burada önemli olan þey
+\verb+<na.strings="">+ ile birlikte \verb+<sep=" ">+ tanýmlanmasý gerektiðidir. 
+
+\subsection{Diðer formatlarda veri okuma ve yazma}
+
+\verb+<foreign>+ kitaplýðýný çeþitli standart paketlerin veri formatýnda verileri
+okumak için ekleyin. Örnekler arasýnda SAS, SPSS, STATA, vs. yer almaktadýr.
+
+{\small \begin{verbatim}
+     library(foreign)
+     # <wage.dta> verisini okur ve <lnu> nesnesine atar.
+     lnu <- read.dta(file="wage.dta") 
+\end{verbatim}}
+
+\verb+<read.ssd()>+ , \verb+<read.spss()>+, vs. SAS ve SPSS formatlarýnda verileri 
+okumak için foreign paketinin içerisinde yer alan komutlardýr. 
+
+Yabancý formatta veri yazmak da kolaydýr. Aþaðýdaki kodlar <lnu> nesnesini <lnunew.dta>
+adýndaki Stata dosyasýna yazdýrýr. 
+
+{\small \begin{verbatim}
+     library(foreign)
+     write.dta(lnu,"lnunew.dta")
+     \end{verbatim}}
+
+
+\subsection{Veri seti nesnesinin içeriðini inceleme}
+
+Burada \htmladdnormallink{Ýsveç Yaþam Düzeyi Anketi}{http://www2.sofi.su.se/LNU2000/english.htm} LNU 1991'den 
+elde edilen veri seti kullanýlmaktadýr.
+
+<<LNU-data>>=
+FILE <-"http://people.su.se/~ma/R_intro/data/lnu91.txt"
+lnu  <- read.table(file=FILE, header = TRUE)
+@
+\verb+<lnu>+  verisini \verb+<attach(lnu)>+ ile iliþtirmek \verb+<lnu>+ veri setine ve veri 
+setindeki deðiþkenlere isimleriyle eriþimi saðlar.
+Eðer \verb+<lnu>+ veri setini iliþtirmediyseniz  \verb+<lnu>+ veri setinde yer alan \verb+<female>+
+deðiþkenine atýfta bulunmak için \verb+<lnu$female>+ komutunu kullanabilirsiniz.
+Veri setine iliþtirilmiþ olarak ihtiyacýnýz kalmadýðýnda iliþtirme iþlemini \verb+<detach()>+ komutuyla 
+geri alabilirsiniz.
+
+\textit{lnu veri setinin içeriðinin tanýmlanmasý.}
+<<Summary>>=
+str(lnu)       # Veri yapýsýnýn tanýmý
+summary(lnu)   # Veri tanýmlamasýnýn özeti
+@
+\subsection{Veri setinde deðiþken yaratma ve deðiþken çýkartma}
+
+Burada \verb+<logwage>+ deðiþkenini \verb+<wage>+ deðiþkeninin logaritmasý olarak tanýmlýyoruz.
+Sonrasýnda ise deðiþkeni çýkartýyoruz.
+
+<<Creating and Removing a variable>>=
+lnu$logwage <- log(lnu$wage)
+lnu$logwage <- NULL
+@
+
+Orjinal deðiþkenlerin basit dönüþtürmeleri olan deðiþkenleri yaratmaya
+gerek olmadýðýna dikkat edin. Dönüþtürmeyi doðrudan hesaplamalarýn ve tahminlerin içerisinde
+gerçekleþtirebilirsiniz.
+
+\subsection{Veri setinde yer alan deðiþkenlerin alt kümesini seçme}
+{\small \begin{verbatim}
+     # lnu veri setinde (wage,female) 
+     # deðiþkenlerinin altkümesini okuma.
+     lnu.female <- subset(lnu, select=c(wage,female)) 
+     
+     # Veri setinde iki nesneyi (deðiþkeni) 
+     # bir araya getirme.
+     attach(lnu)
+     lnu.female <- data.frame(wage,female)
+
+     # lnu'da female hariç tüm deðiþkenleri okuma.
+     lnux <- subset(lnu, select=-female)
+
+     # wage'den public'e kadar deðiþkenleri okuma.
+     lnuxx <- subset(lnu, select=wage:public)
+     \end{verbatim}}
+
+\subsection{Veri setinde gözlemlerin altkümesini seçme}
+
+     {\small \begin{verbatim}
+     attach(lnu)
+     
+     # Bir deðiþkende var olan eksik deðer 
+     # içeren gözlemleri silme.
+     lnu <- na.omit(lnu)
+
+     # Sadece female deðiþkenine ait veriyi saklama.
+     fem.data <- subset(lnu, female==1)
+
+     # Sadece female ve public employees 
+     # deðiþkenlerine ait veriyi saklama.
+     fem.public.data <- subset(lnu, female==1 & public==1)
+
+     # wage > 90 olan tüm gözlemleri seçme.
+     highwage <- subset(lnu, wage > 90)
+     \end{verbatim}}
+
+\subsection{Deðiþkenlerin deðerlerini deðiþtirme}
+
+Okul deðiþkeni içerisinde yer alan deðerleri deðiþtirerek bireyin üniversite eðitimi alýp almadýðýný 
+gösteren bir deðiþken yaratýyoruz.
+
+Okul deðiþkenini kopyalayýn.
+<<copy>>=
+lnu$university <- lnu$school
+@
+
+Üniversite deðerini eðer okula gidilen yýl sayýsý 13 yýldan az ise 0 deðeri ile 
+deðiþtirin.
+
+<<replace 1>>=
+lnu$university <- replace(lnu$university, 
+lnu$university<13, 0) 
+@
+
+Üniversite deðerini eðer okula gidilen yýl sayýsý 12 yýldan fazla ise 1 deðeri ile 
+deðiþtirin.
+
+<<replace 2>>=
+lnu$university <- replace(lnu$university, 
+lnu$university>12, 1) 
+@
+
+\verb+<lnu$university>+  deðiþkeni þimdi üniversite eðitimi için bir kukla deðiþken haline gelmiþtir.
+Kaydettikten sonra veri setini tekrar iliþtirmeyi unutmayýn. Kategori deðiþkenleri yaratmak için \verb+<cut>+ 
+komutunu kullanabilirsiniz. 
+
+<<dummy variable 0>>=
+attach(lnu, warn.conflicts=FALSE)
+table(university)
+@
+
+Kukla deðiþken yaratmak için þu þekilde ilerliyoruz:
+<<Dummy variables 1>>=
+university <- school > 12
+table(university)
+@
+
+Aslýnda genellikle kukla deðiþken yaratmamýza gerek yoktur. 
+\verb+<school > 12>+ üzerinden doðrudan iþlemleri gerçekleþtirebiliriz.
+
+<<Dummy variables 2>>=
+table(school > 12)
+@
+
+
+\subsection{Eksik deðerleri deðiþtirmek}
+
+Bir vektör yaratýyoruz. Bir deðeri eksik deðer olarak yeniden kodluyoruz 
+ve ardýndan eksik deðeri orijinal deðeri ile deðiþtiriyoruz.
+
+{\small \begin{verbatim}
+     a <- c(1,2,3,4)    # vektör yaratýr
+     is.na(a) <- a ==2  # a==2 'yi NA olarak kodlar
+     a <- replace(a, is.na(a), 2)# NA'yý 2 ile deðiþtirir
+     # or
+     a[is.na(a)] <- 2
+     \end{verbatim}}
+
+
+\subsection{Faktörler}
+
+Bazen deðiþkenlerimizin çeþitli aralýklara karþýlýk gelen uygun düzeydeki 
+kategori deðiþkenleri biçiminde kullanýlmasý için yeniden tanýmlanmasý gerekir.
+9 yýla kadar, 10 ila 12 yýl arasý ve 12 yýl üstü için okul kategorileri oluþturmak 
+isteyebiliriz. Bu \verb+<cut()>+ kullanýlarak kodlanabilir. En düþük kategoriyi dahil etmek için 
+\verb+<include.lowest=TRUE>+ argümanýný kullanýrýz. 
+<<Factor 1>>=
+SchoolLevel <- cut(school,
+c(9,12, max(school), include.lowest=TRUE))
+table(SchoolLevel)
+@
+
+Her düzey için etiket ayarlanabilir. Bir önceki bölümde yaratýlan üniversite deðiþkenini ele 
+alalým.
+
+<<Factor 2>>=
+SchoolLevel <- factor(SchoolLevel, 
+labels=c("basic","gymnasium","university"))
+table(SchoolLevel)
+@
+
+
+
+Yukarýdaki gibi tanýmlanan bir faktör, örneðin regresyon modelinde kullanýlabilir.
+Referans kategori en düþük deðere sahip düzeydir. \verb+<Basic>+'e
+karþýlýk gelen en düþük deðer $1$ 'dir ve <Basic> sütunu karþýlaþtýrma matrisinde yer almamaktadýr. 
+Taban kategoriyi deðiþtirmek bu sütun yerine baþka bir sütunu dýþlayacaktýr. 
+Bu aþaðýda yer alan örnekte gösterilmiþtir.
+
+<<Factor 3>>=
+contrasts(SchoolLevel)
+contrasts(SchoolLevel) <-
+contr.treatment(levels(SchoolLevel),base=3)
+contrasts(SchoolLevel)
+@
+
+Aþaðýdaki komut \verb+<school>+ deðiþkenini sayýsal bir deðiþken olarak tanýmlar.
+
+<<As numeric>>=
+lnu$school <- as.numeric(lnu$school)
+@
+
+
+
+\subsection{Veriyi grup bazýnda toplulaþtýrmak}
+ 
+V1, V2 ve V3 gibi 3 deðiþkenden oluþan basit bir veri seti yaratalým. 
+V1 grup birimi ve V2 ile V3 iki sayýsal deðiþken olsunlar.
+
+<<Data df1>>=
+(df1 <- data.frame(V1=1:3, V2=1:9, V3=11:19))
+@
+
+\verb+<aggregate>+ komutunu kullanarak \verb+<sum>+, \verb+<mean>+, vb. grup özelliklerini içeren
+yeni bir data.frame oluþturalým. Burada toplam (sum) fonksiyonu \verb+<V1>+ grup birimi ile 
+\verb+<df1[,2:3]>+ üzerine yani \verb+<df1>+'in ikinci ve üçüncü sütunlarýna uygulanýr. 
+
+<<Aggregate 1>>=
+(aggregate.sum.df1 <- 
+aggregate(df1[,2:3],list(df1$V1),sum))
+(aggregate.mean.df1 <- 
+aggregate(df1[,2:3],list(df1$V1),mean))
+@
+
+<Group.1> deðiþkeni, gruplarý tanýmlayan bir faktördür.
+
+Aþaðýda toplulaþtýrma (aggregate) fonksiyonuna iliþkin bir örnek yer almaktadýr. 
+Birim tanýmlayýcý \verb+<dat$id>+'yi içeren \verb+<dat>+ þeklinde bir veri setimiz olduðunu
+varsayalým. Zaman içerisinde tekrar tekrar gözlemlenen birimler \verb+dat$Time+ deðiþkeni ile gösterilsin.
+
+<<Aggregate 2>>=
+(dat <- data.frame(id=rep(11:12,each=2),
+Time=1:2, x=2:3, y =5:6))
+@
+
+Bu veri setinde yer alan tüm deðiþkenler için grup ortalamalarýný hesaplar 
+ve \verb+<Time>+ deðiþkeni ile otomatik olarak oluþturulmuþ olan grup tanýmlayýcý deðiþken 
+\verb+<Group.1>+'i dýþlar. 
+
+<<Aggregate between>>=
+(Bdat <- subset(aggregate(dat,list(dat$id),FUN=mean),
+select=-c(Time,Group.1)))
+@
+
+\verb+<id>+ uzunluðunda ve \verb+<id>+ içerisinde yer alan her bir gözlem için tekrarlayan grup 
+ortalamalarýný içeren bir veri seti yaratmak için \verb+<Bdat>+ ve \verb+<dat$id>+'yi birleþtirin.
+
+<<Merge Between>>=
+(dat2 <- subset(merge(data.frame(id=dat$id),Bdat),
+select=-id))
+@
+
+Þimdi \verb+<id>+ ve \verb+<Time>+ tanýmlayýcýlarýný ve diðer tüm deðiþkenlerin ortalama
+deðerlerden sapmalarýný içeren bir veri seti yaratabiliriz.
+
+<<Within transformation>>=
+(within.data <- cbind(id=dat$id, Time=dat$Time,
+subset(dat,select=-c(Time,id))  - dat2))
+@
+
+\subsection{Farklý veri setlerini kullanma}
+
+
+Genellikle farklý veri setlerinden verileri kullanmamýz gerekir.
+\R'da bu verileri, diðer birçok istatistik paket programýnda olduðu üzere 
+tüm verinin ayný anda ve bir tablo þeklinde var olduðu biçimde, 
+ayný veri seti içerisine koymamýza gerek yoktur.
+
+Örneðin, deðiþkenler ayný uzunluða sahip olduðu sürece (ayný gözlem sayýsý) ve ayný sýrada 
+(tüm deðiþkenlerdeki i'inci gözlem ayný birime karþýlýk gelir) olduðu sürece 
+bir veri setinden bir deðiþken, diðer bir veri setinden baþka bir deðiþken kullanarak bir regresyon 
+kurmak mümkündür. Aþaðýdaki iki veri setini ele alalým:
+
+<<data1 and data2>>=
+data1 <- data.frame(wage = 
+c(81,77,63,84,110,151,59,109,159,71),
+female = c(1,1,1,1,0,0,1,0,1,0),
+id     = c(1,3,5,6,7,8,9,10,11,12))
+
+data2 <- data.frame(experience = 
+c(17,10,18,16,13,15,19,20,21,20),
+id       = c(1,3,5,6,7,8,9,10,11,12))
+@
+
+Þimdi veri setlerini birleþtirmeden her ikisinden de 
+deðiþkenleri kullanabiliriz. \verb+<data1$wage>+'in  
+\verb+<data1$female>+  ve  \verb+<data2$experience>+ üzerine regresyonunu
+gerçekleþtirelim.
+
+<<variables from different data>>=
+lm(log(data1$wage) ~ data1$female + data2$experience)  
+@
+
+Farklý veri setlerinde yer alan deðiþkenleri tek bir veri 
+setine yerleþtirerek analizimizi bu yeni veri seti üzerinden de gerçekleþtirebiliriz.
+
+<<Putting two data together>>=
+(data3 <- data.frame(data1$wage,
+data1$female,data2$experience))
+@
+
+Veri setlerini birleþtirebiliriz. Eðer her iki veri setinde de ayný deðiþken yer
+alýyorsa, veri bu deðiþken ile tutarlý biçimde birleþtirilir. 
+
+<<Merge two data sets>>=
+(data4 <- merge(data1,data2))
+@
+
+
+Diðer paket programlarda olduðu üzere gözlemlerin \verb+<id>+'de tanýmlandýðý þekliyle
+ayný sýrada olmasýna gerek olmadýðýna dikkat ediniz. 
+
+Eðer iki veri setini ortak bir deðiþken kullanarak eþleþtirmek istiyorsak ve bu 
+deðiþken veri setlerinde farklý isimlere sahipse, isimleri ayný olacak biçimde deðiþtirebilir veya 
+veri olduðu þekliyle kullanýp verileri eþleþtirirken kullanýlacak deðiþkenleri tanýmlayabiliriz.
+Eðer \verb+<data2>+ ve \verb+<data1>+ veri setlerinde eþleþtirilecek deðiþken \verb+<id2>+ ve \verb+<id>+ 
+ise aþaðýdaki yazým kullanýlabilir:
+
+{\small \begin{verbatim}
+     merge(data1,data2, by.x="id", by.y="id2")
+     \end{verbatim}}
+
+
+\verb+ <by.x="id", by.y="id2">+ argümanlarý \verb+data1+'da eþleþtirme deðiþkeninin
+\verb+id+ ve \verb+data2+'de \verb+id2+ olduðunu ifade eder. 
+
+Ayný zamanda veri setlerini \verb+<data.frame>+ veya \verb+<cbind>+ yardýmýyla 
+varolan sýrasýnda birleþtirebilirsiniz. Bu þekilde veri, veri setindeki sýrasýnda gözlem gözlem eþleþtirilir. 
+Bu aþaðýdaki örnekte gösterilmiþtir. 
+
+<<Column bind data frames>>=
+data1.noid <- data.frame(wage   = c(81,77,63),
+female = c(1,0,1))
+
+data2.noid <- data.frame(experience = c(17,10,18))
+cbind(data1.noid,data2.noid)
+@
+
+Eðer bir veri setinin sonuna  gözlem eklemek isterseniz, \verb+<rbind>+ kullanabilirsiniz.
+Aþaðýdaki örnek \verb+<data4>+'teki 2.,3. ve 4. sütunlarý iki parçaya ayýrarak \verb+<rbind>+ 
+ile tekrar bir araya getirmektedir. 
+
+<<Row bind>>=
+data.one.to.five <- data4[1:5,2:4]
+data.six.to.ten  <- data4[6:10,2:4]
+rbind(data.one.to.five,data.six.to.ten)
+@
+
+
+\section{Temel istatistikler}
+Bir veri setindeki tüm deðiþkenler için özet istatistikler:
+{\small \begin{verbatim}
+     summary(mydata)
+     \end{verbatim}}
+
+Bir deðiþkene ait Ortalama (Mean), Ortanca (Median), Standart Sapma (Standard deviation), Maksimum ve 
+Minimum:
+
+{\small \begin{verbatim}
+     mean (myvariable)
+     median (myvariable) 
+     sd (myvariable)
+     max (myvariable)
+     min (myvariable)
+     # 10, 20, ..., 90 yüzdelikleri hesapla 
+     quantile(myvariable, 1:9/10)
+     \end{verbatim}}
+
+\R\ \verb+<sum>+, \verb+<mean>+, vs.'yi \verb+<NA>+ içeren bir nesne üzerine hesapladýðýnda, 
+\verb+<NA>+ sonucunu verir. Bu fonksiyonlarý verinin var olduðu yerdeki gözlemlere uygulamak için
+\verb+<na.rm=TRUE>+ argümanýný kullanmalýsýnýz. Diðer bir alternatif ise \verb+<NA>+ içeren tüm 
+veri satýrlarýný \verb+<na.omit>+ ile dýþlamaktýr.
+
+<<Sum when there are NA's>>=
+a <- c(1,NA, 3,4)
+sum(a)
+sum(a,na.rm=TRUE)
+table(a, exclude=c())
+@
+
+Ayrýca, NA'larý dýþlayan ve toplamý hesaplayan \\
+\begin{center}
+\verb+<sum(na.omit(a))>+ 
+\end{center}
+veya \verb+<a>+ içerisinde NA olmayan (!is.na) elemanlarýn toplamýný hesaplayan \\
+\begin{center}
+\verb+<sum(a[!is.na(a)])>+ 
+\end{center}
+\\
+kullanabilirsiniz.
+
+\subsection{Çizelgeleme}
+
+\htmladdnormallink{Ýlk olarak veri setini okutalým}
+{http://people.su.se/~ma/R_intro/data/}. 
+
+Çapraz Çizelgeleme
+<<Cross tabulation>>=
+attach(lnu,warn.conflicts=FALSE)
+table(female,public) # frekanslarý verir
+
+(ftable.row <- cbind(table(female,public),
+total=table(female)))
+(ftable.col <- rbind(table(female,public),
+total=table(public)))
+@
+{\small \begin{verbatim}
+     # Bunu deneyin:  
+     # satýrlara göre göreli frekans: female
+     ftable.row/c(table(female))
+     # sütunlara göre göreli frekans: public
+     ftable.col/rep(table(public),each=3) 
+     # rep(table(public),each=3)  
+     # table(public)'deki her deðeri 3 kez tekrar eder 
+     \end{verbatim}}
+
+
+Kategoriler ile çeþitli istatistikler oluþturma. 
+Aþaðýdaki komut erkekler (males) ve kadýnlar (female) için ortalama
+ücretleri (wage) verir.
+ 
+<<Tapply 1>>=
+tapply(wage, female, mean)
+@
+\verb+<length>, <min>, <max>+, vs. kullanýmý erkekler ve kadýnlar için 
+farklý gözlem sayýsý, minimum, maximum, vs. oluþturur.
+
+<<Tapply 2>>=
+tapply(wage, female, length)
+@
+
+Aþaðýda yer alan örnek özel (private) sektör ve kamu (public) sektöründeki erkekler ve kadýnlar 
+için ortalama ücretleri verir. 
+
+<<Tapply 2>>=
+tapply(wage, list(female,public), mean)
+@
+
+Aþaðýdaki komut ise eþ uzunlukta bir vektör yaratarak grup bazýnda ortalamalarý 
+hesaplar. Eþ uzunluk her grubun tüm elemanlarý için grup istatistiklerinin elde edildiði anlamýna gelmektedir. 
+Erkekler ve kadýnlar için ortalama ücret:
+
+<<Group variables with ave>>=
+attach(lnu, warn.conflicts=FALSE)
+lnu$wage.by.sex<- ave(wage,female,FUN=mean)
+@
+\verb+<mean>+ fonksiyonu  \verb+<min>, <max>, <length>+, vs. ile deðiþtirilebilir.
+
+ 
+\section{Matrisler}
+
+\R'da matrisi þu þekilde tanýmlarýz (\R'da bakýnýz ?matrix):
+
+3 satýr ve 4 sütundan oluþan ve sütunlarýnda 1'den 12'ye kadar elemanlarý içeren bir matris:
+
+<<Matrix 1>>=
+matrix(1:12,3,4)
+@
+
+3 satýr ve 4 sütundan oluþan ve satýrlarýnda 1'den 12'ye kadar elemanlarý içeren bir matris:
+
+<<Matrix 2>>=
+(A <- matrix(1:12,3,4,byrow=TRUE))
+dim(A)         # Matrisin boyutu
+nrow(A)        # Satýr sayýsý, dim(A)[1] ile ayný
+ncol(A)        # Sütun sayýsý, dim(A)[2] ile ayný
+@
+
+\subsection{Endeksleme}
+
+Bir matrisin elemanlarý, matris adýndan sonra köþeli parantez kullanýlarak ve aralarýna virgül 
+olacak þekilde satýr ve sütünlara baþvurularak listelenebilir. Benzer bir endeklemeyi diðer nesnelerin
+elemanlarýný listelemek için de kullanabilirsiniz.
+
+\begin{verbatim}
+     A[3,]        # 3. satýrý listeleme
+     A[,3]        # 3. sütunu listeleme
+     A[3,3]       # 3. satýr ve üçüncü sütun
+     A[-1,]       # 1. satýr hariç matrisin tamamý
+     A[,-2]       # 2. sütun hariç matrisin tamamý
+\end{verbatim}
+
+Matris elemanlarý üzerinde bazý koþullarýn deðerlendirilmesi
+
+<<Matrix 3>>=
+A>3   # 3'ten büyük elemanlar
+A==3  # 3'e eþit elemanlar
+@
+Bazý koþullarý yerine getiren elemanlarý listeleme
+<<Matrix 4>>=
+A[A>6]    # 6'dan büyük tüm elemanlar
+@
+\subsection{Skalar Matris}
+
+Skalar matris matrisin özel bir biçimidr. 
+Köþegen-dýþý elemanlarý sýfýr, köþegen üzerindeki elemanlarý ise 
+aynýdýr ve eþit sayýda satýr ile sütuna sahip olan kare bir matristir.  
+Aþaðýdaki örnek matrislerin köþegenleri ile iliþkili 
+bazý matris özelliklerini göstermektedir. Ayrýca \verb+?upper.tri+ ve 
+\verb+?lower.tri+'ye de bakýnýz.
+
+<<Matrix 5>>=
+diag(2,3,3)
+diag(diag(2,3,3))
+@
+
+\subsection{Matris iþlemleri}
+
+\textbf{Matrisin devriði}
+
+Bir matrisin satýrlarýný sütun, sütunlarýný da satýr yapmak matrisin devriðini verir.
+<<Matrix 6>>=
+t(matrix(1:6,2,3)) # 
+@
+(1:6,2,3) matrisi ve (1:6,3,2, byrow=T) matrisini deneyin.
+
+\textbf{Toplama ve çýkarma}
+
+Toplama ve çýkarma iþlmeri boyutlarý ayný olan matrislere 
+veya bir skalar ve bir matrise uygulanabilir.
+
+{\small \begin{verbatim}
+     # Bunu deneyin
+     A <- matrix(1:12,3,4)
+     B <- matrix(-1:-12,3,4)
+     C1 <- A+B
+     D1 <- A-B
+\end{verbatim}}
+	
+
+\textbf{Skalar çarpýmý}
+
+{\small  \begin{verbatim}
+     # Bunu deneyin
+     A <- matrix(1:12,3,4); TwoTimesA = 2*A
+     c(2,2,2)*A
+     c(1,2,3)*A
+     c(1,10)*A 
+\end{verbatim}}
+
+
+\textbf{Matris çarpýmý}
+
+Matris çarpýmý için \R\ <$\%*\%$>  kullanýr ve bu sadece matrisler 
+uyumlu ise çalýþýr.
+
+{\small  \begin{verbatim}
+     E <- matrix(1:9,3,3)
+     crossproduct.of.E <- t(E)%*%E
+     # veya çapraz çarpýmlarý elde etmenin daha etkin diðer bir yolu:
+     crossproduct.of.E <- crossprod(E)
+     \end{verbatim}}
+
+\textbf{Matris tersi}
+
+Kare matris $\textbf{A}$'nýn tersi $\textbf{A}^{-1}$ 
+þeklinde gösterilir ve $\textbf{A}$ ile çarpýldýðýnda birim 
+matris (ana köþegen üzerindeki tüm elemanlarý 1, köþegen-dýþý 
+elemanlarý 0 olan matris) oluþturan matris olarak tanýmlanýr.
+
+
+\begin{equation}
+\textbf{A}\textbf{A}^{-1}=\textbf{A}^{-1}\textbf{A}=\textbf{I}\nonumber
+\end{equation}
+
+{\small \begin{verbatim}
+     FF <- matrix((1:9),3,3)
+     detFF<- det(FF)            # determinantý kontrol eder     
+
+     B <- matrix((1:9)^2,3,3)   # tersi alýnabilir bir 
+                                # matris oluþturur
+     Binverse <- solve(B)
+     Identity.matrix <- B%*%Binverse
+\end{verbatim}}
+
+\newpage
+\section{En küçük kareler}
+
+EKK kullanarak doðrusal bir regresyon modeli oluþturmak için 
+kullanýlan fonksiyon \verb+<lm()>+'dir. Aþaðýdaki örnekte baðýmlý deðiþken 
+\verb+<log(wage)>+ ve açýklayýcý deðiþkenler \verb+<school>+ ve  \verb+<female>+'dir.
+Sabit terim varsayýlan olarak dahil edilmektedir. \verb+<lnu>+ veri setini 
+tanýmlamamýza gerek yoktur çünkü bu deðiþkenleri içeren veri seti zaten 
+iliþtirilmiþ durumdadýr. Regresyon sonucu \verb+<reg.model>+ isimli nesneye atanmaktadýr.
+Bu nesne ileride \verb+<lm>+ kullanýmýný gösteren birkaç örnekten 
+sonra gösterilecek olan birçok ilginç regresyon sonucunu içermektedir. 
+
+\htmladdnormallink{Veri setini oku}
+{http://people.su.se/~ma/R_intro/lnu91.txt} first. 
+
+<<lm 1>>=
+reg.model <- lm (log(wage) ~ school + female)
+summary (reg.model)
+@
+Bazen regresyonu veri setinin bir alt kümsei üzerinde kurmak isteyebiliriz.
+
+{\small \begin{verbatim}
+     lm (log(wage) ~ school + female, subset=wage>100)
+     \end{verbatim}}
+
+Bazen de modelde deðiþkenlerin dönüþtürülmüþ deðerlerini kullanmak isteyebiliriz.
+Dönüþtürme <I()> fonksiyonu içerisinde verilmelidir. 
+I() birim fonksiyonu anlamýna gelmektedir.
+\verb+<expr^2>+,  \verb+<expr>+'nin karesidir.
+
+{\small \begin{verbatim}
+     lm (log(wage) ~ school + female + expr + I(expr^2))
+     \end{verbatim}}
+
+Etkileþimli deðiþkenler:  \verb+<female>+, \verb+<school>+
+{\small \begin{verbatim}
+     lm (log(wage) ~ female*school, data=lnu)
+     \end{verbatim}}
+benzer biçimde:
+{\small \begin{verbatim}
+     lm (log(wage) ~ female + school + female:school, data= lnu)
+       \end{verbatim}}
+
+Sabit terimsiz bir model.
+{\small \begin{verbatim}
+     reg.no.intercept <- lm (log(wage)  ~   female - 1) 
+     \end{verbatim}}
+Sadece sabit terim içeren bir model.
+{\small \begin{verbatim}
+     reg.only.intercept <- lm (log(wage)  ~   1 ) 
+     \end{verbatim}}
+
+Aþaðýdaki örnek \verb+<female>+ ve \verb+<public>+ deðiþkenleri ile 
+tanýmlandýðý þekliyle özel ve kamu sektöründeki erkekler ve kadýnlar için 
+doðrusal model (\verb+<lm>+) tahmin eder. 
+\verb+<lnu>+ verisi 4 farklý hücreye ayrýlmýþtýr: (0,0) özel sektördeki erkekler,
+(1,0) özel sektördeki kadýnlar, (0,1) kamu sektöründeki erkekler ve (1,1) kamu 
+sektöründeki kadýnlar. Elde edilen \verb+<by.reg>+ nesnesi bir listedir ve 
+her elemanýn özetini (\verb+<summary()>+) görüntülemek için \verb+<lapply>+ (liste uygula)
+kullanýlýr.
+
+{\small \begin{verbatim}
+     by.reg <- by(lnu, list(female,public),
+               function(x) lm(log(wage) ~ school, data=x))
+     # ayrý regresyonlarýn özeti 
+     lapply(by.reg, summary)
+     # listedeki ikinci eleman için özet
+     # yani özel sektördeki kadýnlar için. 
+     summary(by.reg[[2]]) 
+     \end{verbatim}}
+
+Aþaðýdaki komut erkek ve kadýn iþçiler için deðiþkenlerin ortalamalarýný 
+listeler (ilk satýr), iki veri setinden \verb+by.female.lnu+ adýnda bir liste 
+yaratýr (ikinci satý) ve erkek ve kadýn iþçiler için bir regresyon tahmini 
+gerçekleþtirir (üçüncü vfe dördüncü satýr).  
+
+{\small \begin{verbatim}
+     by(lnu, list(female), mean) 
+     by.female.lnu <- by(lnu, list(female), 
+           function(x) x); str(by.female.lnu)
+     summary(lm(log(wage) ~ school, data=by.female.lnu[[1]]))
+     summary(lm(log(wage) ~ school, data=by.female.lnu[[2]]))
+     \end{verbatim}}
+
+
+\subsection{Model formülü ve sonuçlarýný görüntüleme}
+	
+Model formülü
+{\small \begin{verbatim} 
+     (equation1 <- formula(reg.model))
+     log(wage) ~ school + female
+     \end{verbatim}}
+
+Tahmin edilen katsayýlar
+<<Coefficients 1>>=
+coefficients(reg.model)     # <coefficients> (katsayýlar), 
+                            # <coef> olarak kýsaltýlabilir
+@
+
+Standart hatalar
+<<Coefficients 2>>=
+coef(summary(reg.model))[,2] 
+@
+
+\verb+<coef(summary(reg.model))[,1:2]>+ komutu,\\
+ \verb+<Estimate>+ (tahminleri)
+ve \verb+<Std.Error>+ (standart hatalarý) görüntüler.
+
+t-deðerleri
+<<Coefficients 3>>=
+coef(summary(reg.model))[,3] 
+@
+
+Ayrýca \verb+<coef(summary(reg.model))>+ komutunu da deneyin. Benzer biçimde
+lm-nesnesinin diðer elemanlarýný: 
+
+Varyans-Kovaryans matrisi: \verb+<vcov(reg.model)>+ : 
+
+Artýklar serbestlik derecesi:\\
+\verb+<df.residual(reg.model)>+ \\
+
+Hata kareler toplamý:\\
+\verb+<deviance(reg.model)>+ 
+
+ve diðer bileþenler:\\
+\verb+<residuals(reg.model)>+\\
+\verb+<fitted.values(reg.model)>+\\
+\verb+<summary(reg.model)$r.squared>+\\
+\verb+<summary(reg.model)$adj.r.squared>+\\
+\verb+<summary(reg.model)$sigma>+\\
+\verb+<summary(reg.model)$fstatistic>+\\
+
+komutlarý ile görüntüleyebilirsiniz. 
+
+\subsection{White deðiþen varyans düzeltilmiþ standart hatalar}
+
+\verb+<car>+, \verb+<sandwich>+ ve \verb+<Design>+ paketleri \emph{robust} standart hatalarý 
+hesaplamak için önceden tanýmlanmýþ fonksiyonlarý içerir. Ýki farklý 
+aðýrlýklandýrma seçeneði mevcuttur.  
+
+White düzeltmesi
+<<White correction using car>>=
+library(car)
+f1 <- formula(log(wage) ~ female +school)
+sqrt(diag(hccm(lm(f1),type="hc0")))
+@
+
+<sandwich> kitaplýðýný kullanarak.
+<<White correction using sandwich>>=
+library(sandwich)
+library(lmtest)
+coeftest(lm(f1), vcov=(vcovHC(lm(f1), "HC0")))
+@
+
+<car> kitaplýðýndaki \verb+<hc0>+ ve <sandwich> kitaplýðýndaki 
+\verb+<HC0>+ orjinal White formülünü kullanmaktadýr. 
+\verb+<hc1>+, \verb+<HC1>+ varyanslarý $\frac{N}{N-k}$ ile çarpmaktadýr. 
+<Design> kitaplýðýný kullanarak:
+
+<<White correction using Design>>=
+library(Design, war, warn.conflicts = FALSE)
+f1 <- formula(log(wage) ~ female +school)
+fm1 <- robcov(ols(f1, x=TRUE, y=TRUE))
+@
+
+\subsection{Grup-içi sabit olmayan hata varyansý}
+
+Bu <Design> kitaplýðýný kullanmaktadýr ve verinin <industry> 
+deðiþkeni tarafýndan da iþaret edildiði gibi sektörler arasý 
+kümelenme gösteridiði durumlara açýklama getirmektedir.
+
+<<Cluster 1>>=
+robcov(ols(f1, x=TRUE, y=TRUE), cluster=industry)
+@
+Grup sayýsý M küçük olduðunda standart hatalarý þu þekilde 
+de düzeltebilirsiniz:
+
+<<Cluster 2>>=
+library(Design)
+f1 <- formula(log(wage) ~ female +school)
+M <- length(unique(industry))
+N <- length(industry)
+K <- lm(f1)$rank
+cl <- (M/(M-1))*((N-1)/(N-K))
+fm1 <- robcov(ols(f1, x=TRUE, y=TRUE), cluster=industry)
+fm1$var <- fm1$var*cl
+coeftest(fm1)  
+@
+
+\subsection{F-testi}
+
+Kýsýtlý (bazý (veya tüm) eðim katsayýlarý üzerine sýfýr kýsýtýnýn konduðu) 
+ve kýsýtsýz (sýfýr olan ve sýfýr olmayan katsayýlara izin veren) modelleri 
+tahmin edin. Kýsýtlý modelde tanýmlandýðý þekliyle \verb+anova()+ komutunu kullanarak 
+ortak hipotezleri test edebilirsiniz.
+
+<<F-test>>=
+mod.restricted <- lm(log(wage) ~ 1)
+mod.unrestricted <- lm(log(wage) ~ female + school)
+anova(mod.restricted,mod.unrestricted)
+@
+
+Sabit olmayan hata varyansý altýnda White varyans-kovaryans matrisini
+kullanýrýz. Modele ait F-deðeri aþaðýdaki þekildedir. 
+Aþaðýdaki kodlarda yer alan \verb+<-1>+ sabit terim ile iliþkili 
+satýr/sütunu dýþlar.
+
+<<F-test HC>>=
+library(car)
+COV <- hccm(mod.unrestricted, "hc1")[-1,-1]
+beta <- matrix(coef(mod.unrestricted, ,1))[-1,]
+t(beta)%*%solve(COV)%*%beta/(lm(f1)$rank -1)
+@
+
+\newpage
+\section{Zaman serileri}
+\label{Zamanserileri}
+\textit{Satýrlarda veri}
+
+Zaman serileri genellikle verinin satýrlarda olduðu biçimde
+olurlar. Örnek olarak \htmladdnormallink{National Institute of
+Economic Research}{http://www.konj.se} tarafýndan gerçekleþtirilen 
+Ýsveç Tüketici Anketi verisi kullanýlmýþtýr. Veri setinde üç seri yer almaktadýr: 
+tüketici güven endeksi, bir makro endeks ve bir de mikro
+endeks.
+
+Ýlk olarak orjinal veri metin formatýnda bir dosyaya kaydedilmiþtir. 
+Veri \R'da girdi olarak kullanýlmadan önce bir metin düzenleyicisi kullanýlarak
+boþluk ile ayrýlmýþ ilk üç serinin deðerleri dosyanýn içerisinde býrakýlmýþtýr. 
+Seriler satýrlardadýr. Serilere ait deðerler deðiþken isimleri olmaksýzýn 
+ayrý satýrlarda listelenmiþtir. 
+
+\texttt{\htmladdnormallink{<macro.txt>}
+{http://people.su.se/~ma/R_intro/data/macro.txt}} dosyasýný okumak için, aþaðýda yer alan kod  
+1993 yýlýnda baþlayan ve 12 frekansa (aylýk) sahip zaman serisi nesnesini tanýmlamadan önce
+\verb+<scan>+ ve \verb+<matrix>+ yardýmýyla veriyi 3 sütun ve 129 satýra yarleþtirir. 
+Seriler \verb+<cci>,<macro.index>+ ve \verb+<micro.index>+ olarak adlandýrýlmýþtýr. 
+\verb+<matrix>+'in varsayýlan olarak veriyi sütunlara doldurduðuna dikkat edin. 
+
+<<Macro data 1>>=
+FILE <- "http://people.su.se/~ma/R_intro/macro.txt"
+macro <-ts(
+matrix(
+scan(FILE),129,3),
+start=1993,frequency=12,
+names=c("cci","macro.index", "micro.index"))
+@
+
+Burada bir deðiþkenin gecikmeli deðerlerinin yaratýlmasý 
+ve veri setine eklenmesi örneði verilmektedir. Hesaplama farklýlýklarý 
+için ayrýca \verb+<diff>+'e bakýnýz.
+
+\verb+<macro>+ veri setindeki veriye gecikmeli \verb+<cci>+'yi
+(1 ay geciktirilmiþ) ekleyerek yeni bir veri seti yaratalým. 
+\verb+<ts.union>+ fonksiyonu tüm gözlemleri saklayarak serileri
+biraraya getirirken, \verb+<ts.intersect>+ yalnýzca seilerin çakýþan 
+kýsýmlarýný saklar. 
+
+<<Macro data 2>>=
+macro2 <- ts.union(
+macro, l.cci = lag(macro[,1],-1))
+@
+
+aggregate fonksiyonu zaman serisi verisinin frekansýný deðiþtirmek 
+için kullanýlabilir. Aþaðýdaki örnek verinin frekansýný deðiþtirmektedir. 
+\verb+nfrequency=1+ yýllýk veri oluþturmaktadýr. \verb+FUN=mean+ zaman 
+içerisinde deðiþkenlerin ortalamasýný hesaplamaktadýr. Varsayýlan
+ise \verb+<sum>+'dýr. 
+
+<<Annual data>>=
+aggregate(macro,nfrequency=1,FUN=mean)
+@
+
+\subsection{Durbin Watson}
+
+\verb+<lmtest>+ paketindeki \verb+<dwtest>+ ve \verb+<car>+ paketindeki 
+\verb+<durbin.watson>+ kullanýlabilir. Ayrýca Breusch-Godfrey yüksek 
+sýradan ardýþýk baðýmlýlýk testi için \verb+<lmtest>+ paketindeki  
+\verb+<lmtest>+'e bakýnýz.
+
+<<Durbin watson>>=
+# Fitting the model.
+mod1 <- lm(cci ~ macro.index, data=macro)
+library(lmtest)
+dwtest(mod1)       
+@
+
+\section{Grafikler}
+
+\subsection{Grafikleri postscript formatýnda kaydetme}
+
+{\small \begin{verbatim}
+     postscript("myfile.ps")
+     hist(1:10)
+     dev.off()
+     \end{verbatim}}
+
+\subsection{Grafikleri pdf formatýnda kaydetme}
+
+{\small \begin{verbatim}
+     pdf("myfile.pdf")
+     hist(1:10)
+     dev.off()
+     \end{verbatim}}
+
+\subsection{Gözlemlerin ve regresyon doðrusunun grafiðini çizme}
+
+Verinin ve regresyon doðrusunun grafiðini çiz. 
+\verb+<school>+'u \verb+<log(wage)>+'e karþý çiz.  
+
+<<Regression, fig=TRUE, echo=TRUE>>=
+    X.LABEL= "Okul süresi"
+    Y.LABEL= "SEK Log saatlik ücret"
+    TITLE <- "Grafik 1: Serpilim ve Regresyon"
+    SubTitle <- "Kaynak: Yasam Düzeyi Anketi, LNU, 1991"
+    plot(school,log(wage), pch=".", 
+    main = TITLE, sub = SubTitle, xlab=X.LABEL, ylab=Y.LABEL)
+    abline(lm(log(wage) ~  school ))
+    abline(v = mean(school), col="red")
+    abline(h = mean(log(wage)), col="red")
+@
+
+\newpage 
+\subsection{Zaman serileri grafiði}
+
+Zaman serisi veri setini okutarak baþlayýn.
+Ayrýntýlar için \ref{Zamanserileri}. kýsma bakýnýz.
+
+Serileri bir grafikte çiz
+<<Tsplot, fig=TRUE, echo=TRUE>>=
+    TITLE  <- "Grafik 2: Tüketici güven endeksi"
+    SubTitle <- "Kaynak: Tüketici Anketi"
+    X.LABEL <- "YIL" 
+    COLORS = c("red","blue","black")
+    ts.plot(macro, col=COLORS,
+    main = TITLE, sub = SubTitle, xlab=X.LABEL) 
+    legend("bottomright",legend=colnames(macro),
+    lty=1,col=COLORS) 
+@
+
+\verb+<plot.ts(macro)>+ serileri ayrý ayrý çizdirir. 
+
+\section{Fonksiyon yazma}
+
+Yazým: 
+\verb+myfunction <- function(x, a, ...) \{...\}+ þeklindedir.
+Fonksiyon için argümanlar fonksiyon gövdesinde, yani \{ \}
+içerisinde yer alan kodlar, tanýmlanmýþ iþlemlerde kullanýlan 
+deðiþkenlerdir. Bir kez bir fonksiyon yazýp onu kaydettiðinizde,  
+bu fonksiyonu \{...\} içerisinde tanýmlanmýþ iþlemler için 
+fonksiyonunuza atýf yaparak ve gerçekleþtirilen iþlem için 
+gerekli olan argümanlarý kullanarak gerçekleþtirebilirsiniz. 
+
+Aþaðýdaki fonksiyon bir deðiþkenin ortalamasýnýn karesini 
+hesaplamaktadýr. \verb+<ms>+ fonksiyonunu tanýmlayarak <x> 
+deðiþkeninin ortalamasýnýn karesini hesaplamak istediðinizde 
+her seferinde \verb+<(mean(x))^2)>+ yazmak yerine \verb+<ms(x)>+ 
+yazabilirsiniz. 
+
+<<Function square mean>>=
+ms <- function(x) {(mean(x))^2}
+a <- 1:100
+ms(a)
+@
+\textit{Fonksiyonun argümanlarý:}
+
+Aþaðýdaki fonksiyon argüman içermemektedir ve \verb+<Hosgeldiniz>+ metin 
+dizisini görüntülemektedir. 
+
+<<Welcome>>=
+welc <- function() {print("Hosgeldiniz")}
+welc()
+@
+
+Bu fonksiyon \verb+x+ argümanýný almaktadýr. Fonksiyonun argümanlarý
+yazýlmalýdýr. 
+
+<<Default values in a function>>=
+myprog.no.default <- function(x)
+print(paste("I use", x ,"for statistical computation."))
+@
+
+Eðer varsayýlan deðer belirlenmiþse, herhangi bir 
+argüman yazýlmadýðýnda varsayýlan deðer kabul edilir.
+
+\footnotesize
+
+<<myprog>>=
+myprog <- function(x="R") 
+{print(paste("I use", x ,"for statistical computation."))}
+myprog()
+myprog("R and sometimes something else")
+@
+\normalsize
+\subsection{Kümelenmiþ Standart Hatalarý hesaplamak için bir fonksiyon}
+
+Burada kümelenmiþ standart hatalarý hesaplamak için bir fonksiyon 
+yer almaktadýr (Yukarýda anlatýlan \verb+Design+ kitaplýðýndaki 
+\verb+robcov+ fonksiyonuna da bakýnýz). Argümanlar veri seti 
+\verb+<dat>+, model formülü \verb+<f1>+ ve kümelenme deðiþkenidir \verb+<cluster>+.   
+
+{\small \begin{verbatim}
+     clustered.standard.errors <- function(dat,f1, cluster){
+     attach(dat, warn.conflicts = FALSE)
+     M <- length(unique(cluster))  
+     N <- length(cluster)  	
+     K <- lm(f1)$rank		
+     cl <- (M/(M-1))*((N-1)/(N-K)) 
+     X <- model.matrix(f1) 	
+     invXpX <- solve(t(X) %*% X) 
+     ei <- resid(lm(f1))
+     uj <- as.matrix(aggregate(ei*X,list(cluster),FUN=sum)[-1])
+     sqrt(cl*diag(invXpX%*%t(uj)%*%uj%*%invXpX))  }
+\end{verbatim}}
+
+Son satýrý \verb+sqrt(diag(invXpX %*%t(ei*X)%*%(X*ei)%*%invXpX))+ ile\\
+deðiþtirmenin White standart hatalarý vereceðine dikkat ediniz.
+
+\section{Çeþitli ipuçlarý} 
+
+
+\begin{tabular}{ll}
+
+Gelir Daðýlýmý
+& Bakýnýz
+\htmladdnormallink{ineq}{http://cran.at.r-project.org/src/
+contrib/Descriptions/ineq.html}.\\
+Logit 
+& \verb+<glm(formula, family=binomial(link=logit))>.+ \\
+& Bakýnýz \verb+<?glm> & <?family>. +\\
+Negatif binom 
+& \verb+<?negative.binomial or ?glm.nb>+ in
+\htmladdnormallink{MASS,
+VR}{http://cran.at.r-project.org/src/contrib/Descriptions/VR
+.html}.\\
+Poisson regresyonu 
+& \verb+<glm(formula, family=poisson(link=log))>.+\\
+& Bakýnýz \verb+<?glm> & <?family>.+\\
+Probit 
+& \verb+<glm(formula,family=binomial(link=probit))>.+ \\
+& Bakýnýz \verb+<?glm> & <?family>. +\\
+Eþanlý denklemler 
+& Bakýnýz 
+\htmladdnormallink{
+sem}{http://cran.at.r-project.org/src/contrib/Descriptions/
+sem.html}, 
+\htmladdnormallink{
+systemfit}{http://cran.at.r-project.org/src/contrib/
+Descriptions/systemfit.html}.\\
+Zaman Serileri 
+& Bakýnýz \verb+<?ts>+ 
+\htmladdnormallink{tseries}{http://cran.at.r-project.org/src
+/contrib/Descriptions/tseries.html},  
+\htmladdnormallink{urca}{http://cran.at.r-project.org/src/
+contrib/Descriptions/urca.html} ve
+\htmladdnormallink{strucchange}{http://cran.at.r-project.org
+/src/contrib/Descriptions/strucchange.html}.\\
+Tobit 
+& Bakýnýz \verb+<?tobin>+,  
+\htmladdnormallink{
+survival}{http://cran.at.r-project.org/src/contrib/
+Descriptions/survival.html} içerisinde.\\
+\end{tabular}
+
+
+\section{Teþekkür}
+
+Michael Lundholm , Lena Nekby ve Achim
+Zeileis'e deðerli yorumlarý için minnettarým.
+
+\newpage
+\bibliography{LittBibRintro}
+\bibliographystyle{plainnat}
+
+\end{document}
+<<BibTex, echo=FALSE>>=
+write(paste(
+"@BOOK{AER,
+  AUTHOR       = {Christian Kleiber and Achim Zeileis},
+  TITLE	       = {Applied Econometrics with R},
+  PUBLISHER    = {Springer},
+  YEAR	       = 2008,
+  ADDRESS      = {New York},
+  NOTE	       = {ISBN 978-0-387-77316-2},
+  URL = {http://www.springer.com/978-0-387-77316-2}}"
+,
+"@Book{Dalgaard,
+  author       = {Peter Dalgaard},
+  title	       = {Introductory Statistics with {R}},
+  edition      = {2nd},
+  year	       = 2008,
+  publisher    = {Springer},
+  note	       = {ISBN 978-0-387-79053-4},
+  pages	       = 380,
+  url	       = {http://www.biostat.ku.dk/~pd/ISwR.html},
+  publisherurl =
+{http://www.springer.com/statistics/computational/book/978-0
+-387-79053-4}}"
+,
+"@Book{FOX,
+  author       = {John Fox},
+  title	       = {An {R} and {S-Plus} Companion to Applied
+Regression},
+  publisher    = {Sage Publications},
+  year	       = 2002,
+  address      = {Thousand Oaks, CA, USA},
+  note	       = {ISBN 0-761-92279-2},
+  url	       =
+{http://socserv.socsci.mcmaster.ca/jfox/Books/Companion/
+index.html}}"
+,
+"@Manual{Rcore,
+ title        = {R: A Language and Environment for
+Statistical Computing},
+ author       = {{R Development Core Team}},
+ organization = {R Foundation for Statistical Computing},
+ address      = {Vienna, Austria},
+ year         = {2008},
+ note         = {{ISBN} 3-900051-07-0},
+ url          = {http://www.R-project.org} }"
+,
+"@Unpublished{Koenker07,
+ author      = {Koenker, Roger and Zeileis, Achim},
+ year        = {2007},
+ title       = {Reproducible Econometric Research 
+ (A Critical Review of the State of the Art)},
+ note        = {Report 60, Department of Statistics and
+Mathematics, 
+ Wirtschaftsuniversität Wien, Research Report Series},
+ url         =
+{http://www.econ.uiuc.edu/~roger/research/repro/}}"
+,
+"@Book{VR,
+ author    = {William N. Venables and Brian D. Ripley},
+ title	   = {Modern Applied Statistics with {S}. Fourth
+Edition},
+ publisher = {Springer},
+ year      = 2002,
+ address   = {New York},
+ note	   = {ISBN 0-387-95457-0},
+ url	   = {http://www.stats.ox.ac.uk/pub/MASS4/},
+ publisherurl       =
+{http://www.springeronline.com/sgw/cda/frontpage/0,11855,4-
+40109-22-1542120-0,00.html}}"
+,
+sep="\n"),
+file="LittBibRintro.bib")
+@
+
