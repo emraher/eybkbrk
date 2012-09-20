@@ -2,6 +2,7 @@
 
 
 .Rnw dosyasını R'da çalıştırmak için: Sweave("R_giris.Rnw")
+
 Friedrich Leisch tarafından yazılan Sweave için 
 http://www.stat.uni-muenchen.de/~leisch/Sweave/
 adresine bakınız.
