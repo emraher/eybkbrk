@@ -8,6 +8,6 @@ http://www.stat.uni-muenchen.de/~leisch/Sweave/
 adresine bakınız.
 
 Bu dosya Mahmood Arai tarafından hazırlanan 
-"A Brief Guide to R for Beginners in Econometrics"
+"A Brief Guide to R for Beginners in Econometrics" adlı
 kılavuzun Türkçeleştirilmiş halidir.
 http://people.su.se/~ma/R_intro/
