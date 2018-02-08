@@ -1,13 +1,5 @@
-###"Ekonometriye Yeni Başlayanlar için Kısa bir R Kılavuzu" 
+### "Ekonometriye Yeni Başlayanlar için Kısa bir R Kılavuzu" 
 
+.Rnw dosyasını R'da çalıştırmak için: `Sweave("R_giris.Rnw")`
 
-.Rnw dosyasını R'da çalıştırmak için: Sweave("R_giris.Rnw")
-
-Friedrich Leisch tarafından yazılan Sweave için 
-http://www.stat.uni-muenchen.de/~leisch/Sweave/
-adresine bakınız.
-
-Bu dosya Mahmood Arai tarafından hazırlanan 
-"A Brief Guide to R for Beginners in Econometrics" adlı
-kılavuzun Türkçeleştirilmiş halidir.
-http://people.su.se/~ma/R_intro/
+Bu dosya Mahmood Arai tarafından hazırlanan ["A Brief Guide to R for Beginners in Econometrics"](http://people.su.se/~ma/R_intro/) adlı kılavuzun Türkçeleştirilmiş halidir.
